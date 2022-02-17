@@ -21,18 +21,29 @@ router.get('/', async function (req, res, next) {
  * {company: {code, name, description}}
  */
 router.get('/:code', async function (req, res, next) {
-    const results = await db.query(
+    const companyResults = await db.query(
         `SELECT code, name, description 
             FROM companies
             WHERE code = $1    
         `, [req.params.code]
     );
 
-    if (results.rows.length === 0) {
+    if (companyResults.rows.length === 0) {
         throw new NotFoundError();
     }
 
-    return res.json({ company: results.rows[0] });
+    const company = companyResults.rows[0];
+
+    const invoiceResults = await db.query(
+        `SELECT id, amt, paid, add_date, paid_date, comp_code 
+            FROM invoices
+            WHERE comp_code = $1      
+        `, [req.params.code]
+    );
+
+    company.invoices = invoiceResults.rows;
+
+    return res.json({ company });
 });
 
 /** Add a new company, and returns:
@@ -85,6 +96,7 @@ router.delete('/:code', async function (req, res, next) {
     }
     return res.json({ status: "deleted" });
 });
+
 
 
 module.exports = router;

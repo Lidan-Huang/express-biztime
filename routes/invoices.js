@@ -51,34 +51,53 @@ router.get("/:id", async function (req, res, next) {
 /** Add an invoice, returns:
  * {invoice: {id, comp_code, amt, paid, add_date, paid_date}}
  */
-router.post('/', async function(req, res){
+router.post('/', async function (req, res) {
   const results = await db.query(
     `INSERT INTO invoices (comp_code, amt)
       VALUES ($1, $2)
       RETURNING id, comp_code, amt, paid, add_date, paid_date`,
-      [req.body.comp_code, req.body.amt]
+    [req.body.comp_code, req.body.amt]
   );
 
-  return res.json({invoice: results.rows[0]});
+  return res.json({ invoice: results.rows[0] });
 });
 
 /**Update an invoice, returns:
  * {invoice: {id, comp_code, amt, paid, add_date, paid_date}}
  */
-router.put("/:id", async function(req, res){
+router.put("/:id", async function (req, res) {
   const { amt } = req.body;
-    const results = await db.query(
-        `UPDATE invoices
+  const results = await db.query(
+    `UPDATE invoices
             SET amt = $1
             WHERE id = $2
             RETURNING id, comp_code, amt, paid, add_date, paid_date
         `, [amt, req.params.id]
-    );
+  );
 
-    if (results.rows.length === 0) {
-        throw new NotFoundError();
-    }
-    return res.json({ invoice: results.rows[0] });
+  if (results.rows.length === 0) {
+    throw new NotFoundError();
+  }
+  return res.json({ invoice: results.rows[0] });
 })
+
+
+/** Delete an invoice, returns:
+ * {status: "deleted"}
+ */
+router.delete("/:id", async function (req, res) {
+  const results = await db.query(
+    `DELETE FROM invoices
+      WHERE id = $1
+      RETURNING id
+    `, [req.params.id]
+  );
+
+  if (results.rows.length === 0) {
+    throw new NotFoundError();
+  }
+
+  return res.json({ status: "deleted" })
+});
 
 module.exports = router;
