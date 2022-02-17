@@ -3,10 +3,11 @@
 const express = require("express");
 const { NotFoundError } = require("./expressError");
 
-const app = express();
 
-const companiesRoutes = express("./routes/companies");
-console.log(companiesRoutes);
+
+const companiesRoutes = require("./routes/companies");
+
+const app = express();
 
 app.use(express.json());
 
