@@ -15,7 +15,7 @@ router.get('/', async function (req, res, next) {
     );
 
     return res.json({ companies: results.rows });
-})
+});
 
 /** Get a company data,
  * {company: {code, name, description}}
@@ -33,7 +33,7 @@ router.get('/:code', async function (req, res, next) {
     }
 
     return res.json({ company: results.rows[0] });
-})
+});
 
 /** Add a new company, and returns:
  * {company: {code, name, description}}
@@ -48,10 +48,10 @@ router.post('/', async function (req, res, next) {
     );
 
     return res.json({ company: results.rows[0] });
-})
-f
-/** If the company exists, update the data according the client given, or
- * return error message
+});
+
+/** Update company, returns:
+ * {company: {code, name, description}}
  */
 router.put('/:code', async function (req, res, next) {
     const { name, description } = req.body;
@@ -63,35 +63,28 @@ router.put('/:code', async function (req, res, next) {
             RETURNING code, name, description
         `, [name, description, req.params.code]
     );
-    
+
     if (results.rows.length === 0) {
         throw new NotFoundError();
     }
     return res.json({ company: results.rows[0] });
-})
+});
 
-/** Delete a company according given code, and return a message; if the 
- *  code doesn't match, return error message of 404.
+/** Delete company, returns:
+ * {status: "deleted"}
  */
 router.delete('/:code', async function (req, res, next) {
-    const getResults = await db.query(
-        `SELECT code, name, description 
-            FROM companies
-            WHERE code = $1    
-        `, [req.params.code]
-    );
-
-    if (getResults.rows.length === 0) {
-        throw new NotFoundError();
-    }
-
-    const deleteResults = await db.query(
+    const results = await db.query(
         `DELETE FROM companies
             WHERE code = $1
+            RETURNING code
         `, [req.params.code]
     );
+    if (results.rows.length === 0) {
+        throw new NotFoundError();
+    }
     return res.json({ status: "deleted" });
-})
+});
 
 
 module.exports = router;

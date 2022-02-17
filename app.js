@@ -8,6 +8,7 @@ const { NotFoundError } = require("./expressError");
 
 
 const companiesRoutes = require("./routes/companies");
+const invoicesRoutes = require("./routes/invoices");
 
 const app = express();
 
@@ -17,6 +18,8 @@ app.use(express.json());
 /** Registering a route when path starts with '/companies' */
 app.use("/companies", companiesRoutes);
 
+/** Registering a route when path starts with '/invoices' */
+app.use("/invoices", invoicesRoutes);
 
 /** 404 handler: matches unmatched routes; raises NotFoundError. */
 app.use(function (req, res, next) {
