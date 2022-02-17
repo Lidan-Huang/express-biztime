@@ -1,6 +1,8 @@
+"use strict";
 /** BizTime express application. */
 
 const express = require("express");
+
 const { NotFoundError } = require("./expressError");
 
 
@@ -9,8 +11,10 @@ const companiesRoutes = require("./routes/companies");
 
 const app = express();
 
+/**Get json from the request body and apply it for all routes */
 app.use(express.json());
 
+/** Registering a route when path starts with '/companies' */
 app.use("/companies", companiesRoutes);
 
 
@@ -26,7 +30,6 @@ app.use(function (err, req, res, next) {
   if (process.env.NODE_ENV !== "test") console.error(status, err.stack);
   return res.status(status).json({ error: { message, status } });
 });
-
 
 
 module.exports = app;
