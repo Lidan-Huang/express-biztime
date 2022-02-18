@@ -27,5 +27,20 @@ beforeEach(function () {
 });
 
 afterEach(function () {
+  db.query(`
+    DELETE FROM companies
+  `);
+  db.query(`
+    DELETE FROM invoices
+  `);
+});
 
+
+describe("GET /companies", function(){
+  it("Get all companies data", async function() {
+    const resp = await request(app).get("/companies");
+    expect(resp.body).toEqual({
+      companies: [testCompany]
+    });
+  });
 });
