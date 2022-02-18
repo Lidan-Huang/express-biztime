@@ -59,7 +59,7 @@ router.post('/', async function (req, res, next) {
         `, [code, name, description]
     );
 
-    return res.json({ company: results.rows[0] });
+    return res.status(201).json({ company: results.rows[0] });
 });
 
 /** Update company, returns:
