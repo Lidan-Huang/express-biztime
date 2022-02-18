@@ -18,7 +18,8 @@ router.get('/', async function (req, res, next) {
 });
 
 /** Get a company data,
- * {company: {code, name, description}}
+ * {company: {code, name, description, 
+ *  invoices: [{id, amt, paid, add_date, paid_date, comp_code}, ...]}}
  */
 router.get('/:code', async function (req, res, next) {
     const companyResults = await db.query(
